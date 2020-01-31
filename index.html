@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://unpkg.com/rxjs/bundles/rxjs.umd.min.js"></script>
+  </head>
+  <body>
+    <div id="box" style="width: 100px;height: 100px;background: #f00;"></div>
+    <script>
+      const box = document.getElementById('box');
+
+      const { fromEvent } = rxjs;
+      const { switchMap, takeUntil, repeat } = rxjs.operators;
+
+      const mousedown$ = fromEvent(box, 'mousedown');
+      const mouseup$ = fromEvent(box, 'mouseup');
+      const mousemove$ = fromEvent(document, 'mousemove');
+
+      const dragdrop$ = mousedown$.pipe(
+        switchMap(() => mousemove$),
+        takeUntil(mouseup$),
+        repeat()
+      );
+
+      dragdrop$.subscribe(
+        event =>
+          (box.style.transform = `translate(${event.x - 50}px, ${event.y -
+            50}px)`)
+      );
+    </script>
+  </body>
+</html>
